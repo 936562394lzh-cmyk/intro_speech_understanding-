@@ -43,11 +43,9 @@ def dft_matrix(N):
     W (NxN array): a matrix of dtype='complex' whose (k,n)^th element is:
            W[k,n] = cos(2*np.pi*k*n/N) - j*sin(2*np.pi*k*n/N)
     '''
-    # Create row and column indices
-    k = np.arange(N)[:, np.newaxis]   # column vector (N,1)
-    n = np.arange(N)                  # row vector (1,N)
+    k = np.arange(N)[:, np.newaxis]   
+    n = np.arange(N)                  
     
-    # Compute exponent: -j*2π*k*n/N
     W = np.exp(-2j * np.pi * k * n / N)
     return W
 
