@@ -2,7 +2,7 @@ import numpy as np
 
 def voiced_excitation(duration, F0, Fs):
     '''
-    Create voiced speeech excitation.
+    Create voiced speech excitation.
     
     @param:
     duration (scalar) - length of the excitation, in samples
@@ -14,7 +14,11 @@ def voiced_excitation(duration, F0, Fs):
       excitation[n] = -1 if n is an integer multiple of int(np.round(Fs/F0))
       excitation[n] = 0 otherwise
     '''
-    raise RuntimeError("You need to write this part!")
+    T = int(np.round(Fs / F0))          
+    excitation = np.zeros(duration)
+    
+    excitation[0::T] = -1              
+    return excitation
 
 def resonator(x, F, BW, Fs):
     '''
@@ -29,9 +33,25 @@ def resonator(x, F, BW, Fs):
     @returns:
     y (np.ndarray(N)) - resonant output
     '''
-    raise RuntimeError("You need to write this part!")
+    N = len(x)
+    y = np.zeros(N)
+    # 极点半径 r 和角度 theta
+    r = np.exp(-np.pi * BW / Fs)
+    theta = 2 * np.pi * F / Fs
+    a0 = 1 - r**2
+    b1 = 2 * r * np.cos(theta)
+    b2 = -r**2
+    
+    y_1 = 0.0  
+    y_2 = 0.0 
+    for n in range(N):
+        y_n = a0 * x[n] + b1 * y_1 + b2 * y_2
+        y[n] = y_n
+        y_2 = y_1
+        y_1 = y_n
+    return y
 
-def synthesize_vowel(duration,F0,F1,F2,F3,F4,BW1,BW2,BW3,BW4,Fs):
+def synthesize_vowel(duration, F0, F1, F2, F3, F4, BW1, BW2, BW3, BW4, Fs):
     '''
     Synthesize a vowel.
     
@@ -51,4 +71,12 @@ def synthesize_vowel(duration,F0,F1,F2,F3,F4,BW1,BW2,BW3,BW4,Fs):
     @returns:
     speech (np.ndarray(samples)) - synthesized vowel
     '''
-    raise RuntimeError("You need to write this part!")
+    
+    excitation = voiced_excitation(duration, F0, Fs)
+    
+    speech = resonator(excitation, F1, BW1, Fs)
+    speech = resonator(speech, F2, BW2, Fs)
+    speech = resonator(speech, F3, BW3, Fs)
+    speech = resonator(speech, F4, BW4, Fs)
+    
+    return speech
