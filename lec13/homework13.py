@@ -15,6 +15,7 @@ def lpc(speech, frame_length, frame_skip, order):
     excitation (nframes,frame_length) - linear prediction excitation frames
       (only the last frame_skip samples in each frame need to be valid)
     '''
+
     nframes = (len(speech) - frame_length) // frame_skip + 1
     if nframes <= 0:
         raise ValueError("信号长度小于帧长，无法分帧")
@@ -24,7 +25,7 @@ def lpc(speech, frame_length, frame_skip, order):
     
     for i in range(nframes):
         start = i * frame_skip
-        x = speech[start:start + frame_length]          
+        x = speech[start:start + frame_length]     
         
         R = np.array([np.sum(x[:len(x)-k] * x[k:]) for k in range(order + 1)])
         
@@ -33,6 +34,7 @@ def lpc(speech, frame_length, frame_skip, order):
         if order > 0:
             E = R[0]
             for m in range(1, order + 1):
+
                 summ = R[m]
                 for j in range(1, m):
                     summ += a[j] * R[m - j]
@@ -82,10 +84,10 @@ def synthesize(e, A, frame_skip):
     
     for i in range(nframes):
         start = i * frame_skip
-        a = A[i]       
+        a = A[i]    
         for n in range(frame_skip):
             idx = start + n
-
+            
             y_val = e[idx] - np.dot(a[1:], state)
             synthesis[idx] = y_val
 
@@ -120,4 +122,3 @@ def robot_voice(excitation, T0, frame_skip):
             e_robot[n] = gain[frame_idx]
     
     return gain, e_robot
-
